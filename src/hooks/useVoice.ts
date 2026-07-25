@@ -67,11 +67,28 @@ export function useVoice() {
     window.speechSynthesis.speak(utterance);
   }, [selectedVoice]);
 
+  const speakRussian = useCallback((word: string) => {
+    if (!word) return;
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'ru-RU';
+    utterance.rate = 0.9;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
   return {
     voices,
     selectedVoice,
     selectVoice,
     speakWord,
+    speakRussian,
     isSpeaking,
     voicesLoaded
   };

@@ -12,7 +12,7 @@ import { cn } from '../lib/utils';
 
 export function Home() {
   const { cards, categories, addCard, updateCard, deleteCard } = useCards();
-  const { voices, selectedVoice, selectVoice, speakWord, isSpeaking, voicesLoaded } = useVoice();
+  const { voices, selectedVoice, selectVoice, speakWord, speakRussian, isSpeaking, voicesLoaded } = useVoice();
   
   const [activeCategory, setActiveCategory] = useState<string>('All words');
   const [mode, setMode] = useState<DirectionMode>('EN_TO_RU');
@@ -149,6 +149,7 @@ export function Home() {
                 onEnd={() => setIsQuizMode(false)}
                 onScoreUpdate={handleScoreUpdate}
                 speakWord={speakWord}
+                speakRussian={speakRussian}
               />
             </div>
           ) : (

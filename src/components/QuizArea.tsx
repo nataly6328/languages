@@ -51,9 +51,10 @@ interface QuizAreaProps {
   onEnd: () => void;
   onScoreUpdate: (score: number) => void;
   speakWord: (word: string) => void;
+  speakRussian: (word: string) => void;
 }
 
-export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord }: QuizAreaProps) {
+export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord, speakRussian }: QuizAreaProps) {
   const [queue, setQueue] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState('');
@@ -79,10 +80,12 @@ export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord }: QuizA
     if (currentCard && status === 'idle') {
       if (isEnToRu) {
         speakWord(currentCard.english);
+      } else {
+        speakRussian(currentCard.russian);
       }
       inputRef.current?.focus();
     }
-  }, [currentIndex, currentCard, isEnToRu, speakWord, status]);
+  }, [currentIndex, currentCard, isEnToRu, speakWord, speakRussian, status]);
 
   if (!currentCard) return null;
 
@@ -148,14 +151,12 @@ export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord }: QuizA
           <h2 className="text-6xl font-black text-foreground break-words text-center" data-testid="quiz-question">
             {questionWord}
           </h2>
-          {isEnToRu && (
-            <button
-              onClick={() => speakWord(currentCard.english)}
-              className="p-3 text-primary hover:bg-primary/10 rounded-full transition-colors"
-            >
-              <Volume2 className="w-8 h-8" />
-            </button>
-          )}
+          <button
+            onClick={() => isEnToRu ? speakWord(currentCard.english) : speakRussian(currentCard.russian)}
+            className="p-3 text-primary hover:bg-primary/10 rounded-full transition-colors"
+          >
+            <Volume2 className="w-8 h-8" />
+          </button>
         </div>
       </div>
 
