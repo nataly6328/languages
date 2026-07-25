@@ -60,7 +60,7 @@ export function Home() {
               <div>
                 <h1 className="text-4xl font-black text-foreground tracking-tight flex items-center gap-3">
                   <GraduationCap className="w-10 h-10 text-primary" />
-                  EngVocab
+                  Learn English
                 </h1>
                 <p className="text-muted-foreground font-medium mt-1">Study tool for Russian speakers</p>
               </div>
