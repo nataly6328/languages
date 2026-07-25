@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, DirectionMode } from '../types';
 import { useCards } from '../hooks/useCards';
 import { useVoice } from '../hooks/useVoice';
@@ -33,9 +33,10 @@ export function Home() {
     }
   };
 
-  const filteredCards = activeCategory === 'All words' 
-    ? cards 
-    : cards.filter(c => c.category === activeCategory);
+  const filteredCards = useMemo(
+    () => activeCategory === 'All words' ? cards : cards.filter(c => c.category === activeCategory),
+    [cards, activeCategory]
+  );
 
   return (
     <div className="min-h-[100dvh] flex flex-col md:flex-row bg-background">
