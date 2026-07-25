@@ -28,15 +28,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+
+      - name: Use standalone package.json
+        run: cp package.standalone.json package.json
 
       - name: Install dependencies
         run: npm install
 
       - name: Build
-        run: npm run build
-        env:
-          GITHUB_REPO_NAME: ${{ github.event.repository.name }}
+        run: npx vite build --config vite.standalone.config.ts
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
