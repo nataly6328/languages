@@ -29,14 +29,17 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Use standalone package.json
-        run: cp package.standalone.json package.json
+      - name: Use standalone config files
+        run: |
+          cp package.standalone.json package.json
+          cp tsconfig.standalone.json tsconfig.json
+          cp vite.standalone.config.ts vite.config.ts
 
       - name: Install dependencies
         run: npm install
 
       - name: Build
-        run: npx vite build --config vite.standalone.config.ts
+        run: npx vite build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
