@@ -1,7 +1,6 @@
 import { Volume2, Pencil, Trash2 } from 'lucide-react';
 import { Card, DirectionMode } from '../types';
 import { cn } from '../lib/utils';
-import { useVoice } from '../hooks/useVoice';
 
 interface CardItemProps {
   card: Card;
@@ -9,10 +8,11 @@ interface CardItemProps {
   isTeacher: boolean;
   onEdit?: (card: Card) => void;
   onDelete?: (id: string) => void;
+  speakWord: (word: string) => void;
+  isSpeaking: boolean;
 }
 
-export function CardItem({ card, mode, isTeacher, onEdit, onDelete }: CardItemProps) {
-  const { speakWord, isSpeaking } = useVoice();
+export function CardItem({ card, mode, isTeacher, onEdit, onDelete, speakWord, isSpeaking }: CardItemProps) {
   const isEnToRu = mode === 'EN_TO_RU';
 
   const primaryWord = isEnToRu ? card.english : card.russian;

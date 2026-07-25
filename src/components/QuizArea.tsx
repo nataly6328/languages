@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, DirectionMode } from '../types';
 import { Volume2, ChevronRight, X } from 'lucide-react';
-import { useVoice } from '../hooks/useVoice';
 import { cn } from '../lib/utils';
 
 // Web Audio API helpers
@@ -51,10 +50,10 @@ interface QuizAreaProps {
   mode: DirectionMode;
   onEnd: () => void;
   onScoreUpdate: (score: number) => void;
+  speakWord: (word: string) => void;
 }
 
-export function QuizArea({ cards, mode, onEnd, onScoreUpdate }: QuizAreaProps) {
-  const { speakWord } = useVoice();
+export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord }: QuizAreaProps) {
   const [queue, setQueue] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState('');

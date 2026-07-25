@@ -8,9 +8,11 @@ interface CardGridProps {
   isTeacher: boolean;
   onEdit?: (card: Card) => void;
   onDelete?: (id: string) => void;
+  speakWord: (word: string) => void;
+  isSpeaking: boolean;
 }
 
-export function CardGrid({ cards, mode, isTeacher, onEdit, onDelete }: CardGridProps) {
+export function CardGrid({ cards, mode, isTeacher, onEdit, onDelete, speakWord, isSpeaking }: CardGridProps) {
   if (cards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center px-4" data-testid="empty-cards">
@@ -35,6 +37,8 @@ export function CardGrid({ cards, mode, isTeacher, onEdit, onDelete }: CardGridP
           isTeacher={isTeacher}
           onEdit={onEdit}
           onDelete={onDelete}
+          speakWord={speakWord}
+          isSpeaking={isSpeaking}
         />
       ))}
     </div>
