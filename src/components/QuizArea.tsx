@@ -51,10 +51,9 @@ interface QuizAreaProps {
   onEnd: () => void;
   onScoreUpdate: (score: number) => void;
   speakWord: (word: string) => void;
-  speakRussian: (word: string) => void;
 }
 
-export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord, speakRussian }: QuizAreaProps) {
+export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord }: QuizAreaProps) {
   const [queue, setQueue] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [input, setInput] = useState('');
@@ -78,14 +77,9 @@ export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord, speakRu
 
   useEffect(() => {
     if (currentCard && status === 'idle') {
-      if (isEnToRu) {
-        speakWord(currentCard.english);
-      } else {
-        speakRussian(currentCard.russian);
-      }
       inputRef.current?.focus();
     }
-  }, [currentIndex, currentCard, isEnToRu, speakWord, speakRussian, status]);
+  }, [currentIndex, currentCard, status]);
 
   if (!currentCard) return null;
 
@@ -152,7 +146,7 @@ export function QuizArea({ cards, mode, onEnd, onScoreUpdate, speakWord, speakRu
             {questionWord}
           </h2>
           <button
-            onClick={() => isEnToRu ? speakWord(currentCard.english) : speakRussian(currentCard.russian)}
+            onClick={() => speakWord(currentCard.english)}
             className="p-3 text-primary hover:bg-primary/10 rounded-full transition-colors"
           >
             <Volume2 className="w-8 h-8" />
