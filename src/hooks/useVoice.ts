@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'selectedVoiceName';
 
-// Cache word -> audio URL so we only fetch once per word per session
+// Cache word -> audio URL so we only fetch once per session
 const audioUrlCache = new Map<string, string | null>();
 
 async function fetchDictionaryAudio(word: string): Promise<string | null> {
@@ -15,7 +15,6 @@ async function fetchDictionaryAudio(word: string): Promise<string | null> {
     if (!res.ok) { audioUrlCache.set(word, null); return null; }
 
     const data = await res.json();
-    // Walk through phonetics arrays to find the first non-empty audio URL
     for (const entry of data) {
       for (const phonetic of (entry.phonetics ?? [])) {
         if (phonetic.audio) {
@@ -25,11 +24,21 @@ async function fetchDictionaryAudio(word: string): Promise<string | null> {
       }
     }
   } catch {
-    // network error — fall through to null
+    // network error
   }
 
   audioUrlCache.set(word, null);
   return null;
+}
+
+// Silently pre-fetch audio URLs for a list of words in small parallel batches.
+// Results go into the cache so playback is instant when the user taps.
+export async function preloadWords(words: string[]) {
+  const uncached = words.filter(w => !audioUrlCache.has(w));
+  const BATCH = 4;
+  for (let i = 0; i < uncached.length; i += BATCH) {
+    await Promise.all(uncached.slice(i, i + BATCH).map(fetchDictionaryAudio));
+  }
 }
 
 export function useVoice() {
@@ -81,14 +90,13 @@ export function useVoice() {
   const speakWord = useCallback(async (word: string) => {
     if (!word) return;
 
-    // Stop anything currently playing
     window.speechSynthesis.cancel();
     if (currentAudio.current) {
       currentAudio.current.pause();
       currentAudio.current = null;
     }
 
-    // 1. Try real human audio from the Free Dictionary API
+    // Try real human audio first (will be instant if pre-loaded)
     const audioUrl = await fetchDictionaryAudio(word);
     if (audioUrl) {
       const audio = new Audio(audioUrl);
@@ -96,7 +104,6 @@ export function useVoice() {
       setIsSpeaking(true);
       audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
       audio.onerror = () => {
-        // Audio failed to load — fall back to speech synthesis
         setIsSpeaking(false);
         currentAudio.current = null;
         fallbackSpeak(word);
@@ -105,7 +112,6 @@ export function useVoice() {
       return;
     }
 
-    // 2. Fall back to speech synthesis
     fallbackSpeak(word);
 
     function fallbackSpeak(w: string) {
