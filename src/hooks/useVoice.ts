@@ -112,16 +112,32 @@ export function useVoice() {
       return;
     }
 
-    fallbackSpeak(word);
+    googleTtsSpeak(word);
 
-    function fallbackSpeak(w: string) {
-      const utterance = new SpeechSynthesisUtterance(w);
-      if (selectedVoice) utterance.voice = selectedVoice;
-      utterance.rate = 0.9;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend   = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
+    // Google Translate TTS — good quality for any word, instant (no fetch needed)
+    function googleTtsSpeak(w: string) {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w)}&tl=en&client=tw-ob`;
+      const audio = new Audio(url);
+      currentAudio.current = audio;
+      setIsSpeaking(true);
+      audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        currentAudio.current = null;
+        // Last resort: device speech synthesis
+        const utterance = new SpeechSynthesisUtterance(w);
+        if (selectedVoice) utterance.voice = selectedVoice;
+        utterance.rate = 0.9;
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend   = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      };
+      audio.play().catch(() => {
+        // If autoplay blocked, fall through to speech synthesis
+        setIsSpeaking(false);
+        currentAudio.current = null;
+      });
     }
   }, [selectedVoice]);
 
