@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'selectedVoiceName';
 
+// Words that have a bundled MP3 in public/audio/
+const LOCAL_AUDIO_WORDS = new Set([
+  'twentieth', 'twenty-first', 'twenty-second', 'twenty-third',
+  'twenty-fourth', 'thirtieth', 'fortieth', 'hundredth',
+]);
+
 // Cache word -> audio URL so we only fetch once per session
 const audioUrlCache = new Map<string, string | null>();
 
@@ -96,7 +102,19 @@ export function useVoice() {
       currentAudio.current = null;
     }
 
-    // Try real human audio first (will be instant if pre-loaded)
+    // 0. Bundled local MP3 (highest priority — no network needed)
+    if (LOCAL_AUDIO_WORDS.has(word.toLowerCase())) {
+      const localUrl = `${import.meta.env.BASE_URL}audio/${word.toLowerCase()}.mp3`;
+      const audio = new Audio(localUrl);
+      currentAudio.current = audio;
+      setIsSpeaking(true);
+      audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
+      audio.onerror = () => { setIsSpeaking(false); currentAudio.current = null; };
+      audio.play().catch(() => { setIsSpeaking(false); });
+      return;
+    }
+
+    // 1. Try real human audio from Free Dictionary (will be instant if pre-loaded)
     const audioUrl = await fetchDictionaryAudio(word);
     if (audioUrl) {
       const audio = new Audio(audioUrl);
