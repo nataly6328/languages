@@ -1,20 +1,200 @@
 [
-  { "id": "ga9nshh", "english": "cat",      "russian": "кот",           "category": "Animals" },
-  { "id": "rfzeaz3", "english": "dog",      "russian": "собака",        "category": "Animals" },
-  { "id": "fqda1ex", "english": "apple",    "russian": "яблоко",        "category": "Food" },
-  { "id": "ue57kr8", "english": "bread",    "russian": "хлеб",          "category": "Food" },
-  { "id": "5t9txri", "english": "house",    "russian": "дом",           "category": "Places" },
-  { "id": "jtcd5y2", "english": "school",   "russian": "школа",         "category": "Places" },
-  { "id": "tjl4wqt", "english": "first",    "russian": "первый",        "category": "Ordinal numbers" },
-  { "id": "1zcphgg", "english": "second",   "russian": "второй",        "category": "Ordinal numbers" },
-  { "id": "yy51h64", "english": "third",    "russian": "третий",        "category": "Ordinal numbers" },
-  { "id": "uu8wuz2", "english": "fourth",   "russian": "четвертый",     "category": "Ordinal numbers" },
-  { "id": "zo941vv", "english": "fifth",    "russian": "пятый",         "category": "Ordinal numbers" },
-  { "id": "a9kacq6", "english": "sixth",    "russian": "шестой",        "category": "Ordinal numbers" },
-  { "id": "6fk1mg8", "english": "seventh",  "russian": "седьмой",       "category": "Ordinal numbers" },
-  { "id": "o5r2o6v", "english": "eighth",   "russian": "восьмой",       "category": "Ordinal numbers" },
-  { "id": "8v7vxbp", "english": "ninth",    "russian": "девятый",       "category": "Ordinal numbers" },
-  { "id": "cxvpbt1", "english": "tenth",    "russian": "десятый",       "category": "Ordinal numbers" },
-  { "id": "tnqlok4", "english": "eleventh", "russian": "одиннадцатый",  "category": "Ordinal numbers" },
-  { "id": "5v6onm3", "english": "twelfth",  "russian": "двенадцатый",   "category": "Ordinal numbers" }
+  {
+    "id": "ga9nshh",
+    "english": "cat",
+    "russian": "кот",
+    "category": "Animals"
+  },
+  {
+    "id": "rfzeaz3",
+    "english": "dog",
+    "russian": "собака",
+    "category": "Animals"
+  },
+  {
+    "id": "fqda1ex",
+    "english": "apple",
+    "russian": "яблоко",
+    "category": "Food"
+  },
+  {
+    "id": "ue57kr8",
+    "english": "bread",
+    "russian": "хлеб",
+    "category": "Food"
+  },
+  {
+    "id": "5t9txri",
+    "english": "house",
+    "russian": "дом",
+    "category": "Places"
+  },
+  {
+    "id": "jtcd5y2",
+    "english": "school",
+    "russian": "школа",
+    "category": "Places"
+  },
+  {
+    "id": "tjl4wqt",
+    "english": "first",
+    "russian": "первый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "1zcphgg",
+    "english": "second",
+    "russian": "второй",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "yy51h64",
+    "english": "third",
+    "russian": "третий",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "uu8wuz2",
+    "english": "fourth",
+    "russian": "четвертый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "zo941vv",
+    "english": "fifth",
+    "russian": "пятый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "a9kacq6",
+    "english": "sixth",
+    "russian": "шестой",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "6fk1mg8",
+    "english": "seventh",
+    "russian": "седьмой",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "o5r2o6v",
+    "english": "eighth",
+    "russian": "восьмой",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "8v7vxbp",
+    "english": "ninth",
+    "russian": "девятый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "cxvpbt1",
+    "english": "tenth",
+    "russian": "десятый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "tnqlok4",
+    "english": "eleventh",
+    "russian": "одиннадцатый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "id": "5v6onm3",
+    "english": "twelfth",
+    "russian": "двенадцатый",
+    "category": "Ordinal numbers"
+  },
+  {
+    "english": "thirteenth",
+    "russian": "тринадцатый (13-ый)",
+    "category": "Ordinal numbers",
+    "id": "m5ort86"
+  },
+  {
+    "english": "fourteenth",
+    "russian": "четырнадцатый (14-ый)",
+    "category": "Ordinal numbers",
+    "id": "ctshts5"
+  },
+  {
+    "english": "fifteenth",
+    "russian": "пятнадцатый",
+    "category": "Ordinal numbers",
+    "id": "o3473ay"
+  },
+  {
+    "english": "sixteenth",
+    "russian": "шестнадцатый (16-ый)",
+    "category": "Ordinal numbers",
+    "id": "e7vmw4k"
+  },
+  {
+    "english": "seventeenth",
+    "russian": "семнадцатый (17-ый)",
+    "category": "Ordinal numbers",
+    "id": "qswio6s"
+  },
+  {
+    "english": "eighteenth",
+    "russian": "восемнадцатый (18-ый)",
+    "category": "Ordinal numbers",
+    "id": "5ypa26a"
+  },
+  {
+    "english": "nineteenth",
+    "russian": "девятнадцатый (19-ый)",
+    "category": "Ordinal numbers",
+    "id": "9w8s4vf"
+  },
+  {
+    "english": "twentieth",
+    "russian": "двадцатый",
+    "category": "Ordinal numbers",
+    "id": "hk3fdjp"
+  },
+  {
+    "english": "twenty-first",
+    "russian": "двадцать первый (21-ый)",
+    "category": "Ordinal numbers",
+    "id": "6r55td5"
+  },
+  {
+    "english": "twenty-second",
+    "russian": "двадцать второй (22-ой)",
+    "category": "Ordinal numbers",
+    "id": "kqgoi0i"
+  },
+  {
+    "english": "twenty-third",
+    "russian": "двадцать третий (23-ий)",
+    "category": "Ordinal numbers",
+    "id": "cu3bwvy"
+  },
+  {
+    "english": "twenty-fourth",
+    "russian": "двадцать четвёртый (24-ый)",
+    "category": "Ordinal numbers",
+    "id": "njtr5y5"
+  },
+  {
+    "english": "thirtieth",
+    "russian": "тридцатый (30-ый)",
+    "category": "Ordinal numbers",
+    "id": "m18ymhr"
+  },
+  {
+    "english": "fortieth",
+    "russian": "сороковой",
+    "category": "Ordinal numbers",
+    "id": "cvq7ix4"
+  },
+  {
+    "english": "hundredth",
+    "russian": "сотый",
+    "category": "Ordinal numbers",
+    "id": "aekob2i"
+  }
 ]
