@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { LogIn, Download, RefreshCw, Trash2, X, Upload, CheckCircle } from 'lucide-react';
-import { useCards } from '../hooks/useCards';
+import { Card } from '../types';
 
 interface TeacherPanelProps {
   isTeacher: boolean;
   setIsTeacher: (val: boolean) => void;
+  cards: Card[];
+  importCards: (cards: Card[]) => void;
+  deleteAllCards: () => void;
 }
 
-export function TeacherPanel({ isTeacher, setIsTeacher }: TeacherPanelProps) {
+export function TeacherPanel({ isTeacher, setIsTeacher, cards, importCards, deleteAllCards }: TeacherPanelProps) {
   const [showLogin, setShowLogin] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [importSuccess, setImportSuccess] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const { cards, deleteAllCards, importCards } = useCards();
 
   useEffect(() => {
     const session = sessionStorage.getItem('isTeacher');

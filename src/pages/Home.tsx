@@ -12,7 +12,7 @@ import { cn } from '../lib/utils';
 import { preloadWords } from '../hooks/useVoice';
 
 export function Home() {
-  const { cards, categories, addCard, updateCard, deleteCard } = useCards();
+  const { cards, categories, addCard, updateCard, deleteCard, importCards, deleteAllCards } = useCards();
   const { voices, selectedVoice, selectVoice, speakWord, isSpeaking, voicesLoaded } = useVoice();
   
   const [activeCategory, setActiveCategory] = useState<string>('All words');
@@ -185,7 +185,13 @@ export function Home() {
 
         {/* Footer / Teacher Panel */}
         {!isQuizMode && (
-          <TeacherPanel isTeacher={isTeacher} setIsTeacher={setIsTeacher} />
+          <TeacherPanel
+            isTeacher={isTeacher}
+            setIsTeacher={setIsTeacher}
+            cards={cards}
+            importCards={importCards}
+            deleteAllCards={deleteAllCards}
+          />
         )}
 
       </main>
