@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'selectedVoiceName';
 
-// Words that have a bundled MP3 in public/audio/
+// Words that have a bundled MP3 in public/audio/ (better quality than Google TTS for these)
 const LOCAL_AUDIO_WORDS = new Set([
   'twentieth', 'twenty-first', 'twenty-second', 'twenty-third',
   'twenty-fourth', 'thirtieth', 'fortieth', 'hundredth',
@@ -63,7 +63,7 @@ export function useVoice() {
       currentAudio.current = null;
     }
 
-    // Bundled local MP3 for words that had quality problems
+    // Bundled MP3 for words where Google TTS sounds bad
     if (LOCAL_AUDIO_WORDS.has(word.toLowerCase())) {
       const localUrl = `${import.meta.env.BASE_URL}audio/${word.toLowerCase()}.mp3`;
       const audio = new Audio(localUrl);
@@ -71,30 +71,43 @@ export function useVoice() {
       setIsSpeaking(true);
       audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
       audio.onerror = () => {
-        // If MP3 fails for any reason, fall through to device voice
         setIsSpeaking(false);
         currentAudio.current = null;
-        useSpeechSynthesis(word);
+        googleTtsSpeak(word);
       };
       audio.play().catch(() => {
         setIsSpeaking(false);
-        useSpeechSynthesis(word);
+        googleTtsSpeak(word);
       });
       return;
     }
 
-    // All other words: device speech synthesis immediately (no API calls)
-    useSpeechSynthesis(word);
+    // Google TTS — good quality for all standard words
+    googleTtsSpeak(word);
 
-    function useSpeechSynthesis(w: string) {
-      const utterance = new SpeechSynthesisUtterance(w);
-      if (selectedVoice) utterance.voice = selectedVoice;
-      utterance.lang = 'en-US';
-      utterance.rate = 0.9;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend   = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
+    function googleTtsSpeak(w: string) {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w)}&tl=en&client=tw-ob`;
+      const audio = new Audio(url);
+      currentAudio.current = audio;
+      setIsSpeaking(true);
+      audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        currentAudio.current = null;
+        // Last resort: device speech synthesis
+        const utterance = new SpeechSynthesisUtterance(w);
+        if (selectedVoice) utterance.voice = selectedVoice;
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend   = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      };
+      audio.play().catch(() => {
+        setIsSpeaking(false);
+        currentAudio.current = null;
+      });
     }
   }, [selectedVoice]);
 
