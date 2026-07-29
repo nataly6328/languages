@@ -2,11 +2,44 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'selectedVoiceName';
 
-// Words that have a bundled MP3 in public/audio/ (better quality than Google TTS for these)
-const LOCAL_AUDIO_WORDS = new Set([
-  'twentieth', 'twenty-first', 'twenty-second', 'twenty-third',
-  'twenty-fourth', 'thirtieth', 'fortieth', 'hundredth',
-]);
+// Cache word -> audio URL so we only fetch once per session
+const audioUrlCache = new Map<string, string | null>();
+
+async function fetchDictionaryAudio(word: string): Promise<string | null> {
+  if (audioUrlCache.has(word)) return audioUrlCache.get(word)!;
+
+  try {
+    const res = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`
+    );
+    if (!res.ok) { audioUrlCache.set(word, null); return null; }
+
+    const data = await res.json();
+    for (const entry of data) {
+      for (const phonetic of (entry.phonetics ?? [])) {
+        if (phonetic.audio) {
+          audioUrlCache.set(word, phonetic.audio);
+          return phonetic.audio;
+        }
+      }
+    }
+  } catch {
+    // network error
+  }
+
+  audioUrlCache.set(word, null);
+  return null;
+}
+
+// Silently pre-fetch audio URLs for a list of words in small parallel batches.
+// Results go into the cache so playback is instant when the user taps.
+export async function preloadWords(words: string[]) {
+  const uncached = words.filter(w => !audioUrlCache.has(w));
+  const BATCH = 4;
+  for (let i = 0; i < uncached.length; i += BATCH) {
+    await Promise.all(uncached.slice(i, i + BATCH).map(fetchDictionaryAudio));
+  }
+}
 
 export function useVoice() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -54,7 +87,7 @@ export function useVoice() {
     }
   }, [voices]);
 
-  const speakWord = useCallback((word: string) => {
+  const speakWord = useCallback(async (word: string) => {
     if (!word) return;
 
     window.speechSynthesis.cancel();
@@ -63,51 +96,32 @@ export function useVoice() {
       currentAudio.current = null;
     }
 
-    // Bundled MP3 for words where Google TTS sounds bad
-    if (LOCAL_AUDIO_WORDS.has(word.toLowerCase())) {
-      const localUrl = `${import.meta.env.BASE_URL}audio/${word.toLowerCase()}.mp3`;
-      const audio = new Audio(localUrl);
+    // Try real human audio first (will be instant if pre-loaded)
+    const audioUrl = await fetchDictionaryAudio(word);
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
       currentAudio.current = audio;
       setIsSpeaking(true);
       audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
       audio.onerror = () => {
         setIsSpeaking(false);
         currentAudio.current = null;
-        googleTtsSpeak(word);
+        fallbackSpeak(word);
       };
-      audio.play().catch(() => {
-        setIsSpeaking(false);
-        googleTtsSpeak(word);
-      });
+      audio.play().catch(() => fallbackSpeak(word));
       return;
     }
 
-    // Google TTS — good quality for all standard words
-    googleTtsSpeak(word);
+    fallbackSpeak(word);
 
-    function googleTtsSpeak(w: string) {
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w)}&tl=en&client=tw-ob`;
-      const audio = new Audio(url);
-      currentAudio.current = audio;
-      setIsSpeaking(true);
-      audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
-      audio.onerror = () => {
-        setIsSpeaking(false);
-        currentAudio.current = null;
-        // Last resort: device speech synthesis
-        const utterance = new SpeechSynthesisUtterance(w);
-        if (selectedVoice) utterance.voice = selectedVoice;
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend   = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-      };
-      audio.play().catch(() => {
-        setIsSpeaking(false);
-        currentAudio.current = null;
-      });
+    function fallbackSpeak(w: string) {
+      const utterance = new SpeechSynthesisUtterance(w);
+      if (selectedVoice) utterance.voice = selectedVoice;
+      utterance.rate = 0.9;
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend   = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
     }
   }, [selectedVoice]);
 
