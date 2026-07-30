@@ -9,7 +9,6 @@ import { AddCardForm } from '../components/AddCardForm';
 import { TeacherPanel } from '../components/TeacherPanel';
 import { Play, Settings2, Award, ChevronRight, GraduationCap } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { preloadWords } from '../hooks/useVoice';
 
 export function Home() {
   const { cards, categories, addCard, updateCard, deleteCard, importCards, deleteAllCards } = useCards();
@@ -26,13 +25,6 @@ export function Home() {
     const storedScore = localStorage.getItem('bestScore');
     if (storedScore) setBestScore(parseInt(storedScore, 10));
   }, []);
-
-  // Pre-load dictionary audio for all English words as soon as cards arrive
-  useEffect(() => {
-    if (cards.length > 0) {
-      preloadWords(cards.map(c => c.english));
-    }
-  }, [cards]);
 
   const handleScoreUpdate = (score: number) => {
     if (score > bestScore) {
