@@ -21,9 +21,15 @@ export function useCards() {
         return res.json() as Promise<Card[]>;
       })
       .then(remoteCards => {
-        // Server is the source of truth — update state and local cache
-        setCards(remoteCards);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteCards));
+        // Merge: keep server cards, but also keep any words the teacher
+        // added locally that haven't been pushed to words.json yet.
+        const stored = localStorage.getItem(STORAGE_KEY);
+        const localCards: Card[] = stored ? JSON.parse(stored) : [];
+        const remoteEnglish = new Set(remoteCards.map(c => c.english.toLowerCase()));
+        const localOnly = localCards.filter(c => !remoteEnglish.has(c.english.toLowerCase()));
+        const merged = [...remoteCards, ...localOnly];
+        setCards(merged);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       })
       .catch(() => {
         // Offline or local dev without the file — fall back to localStorage
