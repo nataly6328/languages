@@ -4,12 +4,13 @@ import { Check, X } from 'lucide-react';
 
 interface AddCardFormProps {
   editingCard: Card | null;
+  categories: string[];
   onAdd: (card: Omit<Card, 'id'>) => void;
   onUpdate: (id: string, card: Partial<Card>) => void;
   onCancelEdit: () => void;
 }
 
-export function AddCardForm({ editingCard, onAdd, onUpdate, onCancelEdit }: AddCardFormProps) {
+export function AddCardForm({ editingCard, categories, onAdd, onUpdate, onCancelEdit }: AddCardFormProps) {
   const [english, setEnglish] = useState('');
   const [russian, setRussian] = useState('');
   const [category, setCategory] = useState('');
@@ -93,12 +94,18 @@ export function AddCardForm({ editingCard, onAdd, onUpdate, onCancelEdit }: AddC
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Category</label>
             <input
               type="text"
+              list="category-suggestions"
               data-testid="input-category"
               value={category}
               onChange={e => setCategory(e.target.value)}
               className="w-full bg-input/50 border border-border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               placeholder="e.g. Food"
             />
+            <datalist id="category-suggestions">
+              {categories.map(cat => (
+                <option key={cat} value={cat} />
+              ))}
+            </datalist>
           </div>
           <div className="space-y-1">
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Image URL</label>
