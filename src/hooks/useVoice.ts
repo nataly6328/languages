@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'selectedVoiceName';
 
-// Words that have a bundled MP3 in public/audio/ (better quality than Google TTS for these)
+// Words that have a bundled MP3 in public/audio/ (better quality on mobile for these)
 const LOCAL_AUDIO_WORDS = new Set([
   'twentieth', 'twenty-first', 'twenty-second', 'twenty-third',
   'twenty-fourth', 'thirtieth', 'fortieth', 'hundredth',
@@ -63,7 +63,7 @@ export function useVoice() {
       currentAudio.current = null;
     }
 
-    // Bundled MP3 for words where Google TTS sounds bad
+    // Bundled MP3 for the 8 words that sound bad through speech synthesis on mobile
     if (LOCAL_AUDIO_WORDS.has(word.toLowerCase())) {
       const localUrl = `${import.meta.env.BASE_URL}audio/${word.toLowerCase()}.mp3`;
       const audio = new Audio(localUrl);
@@ -73,35 +73,24 @@ export function useVoice() {
       audio.onerror = () => {
         setIsSpeaking(false);
         currentAudio.current = null;
-        googleTtsSpeak(word);
+        deviceSpeak(word);
       };
-      audio.play().catch(() => { setIsSpeaking(false); googleTtsSpeak(word); });
+      audio.play().catch(() => { setIsSpeaking(false); deviceSpeak(word); });
       return;
     }
 
-    // Google TTS — instant, no API call needed
-    googleTtsSpeak(word);
+    // All other words: device speech synthesis — uses the voice the user selected
+    deviceSpeak(word);
 
-    function googleTtsSpeak(w: string) {
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w)}&tl=en&client=tw-ob`;
-      const audio = new Audio(url);
-      currentAudio.current = audio;
-      setIsSpeaking(true);
-      audio.onended = () => { setIsSpeaking(false); currentAudio.current = null; };
-      audio.onerror = () => {
-        setIsSpeaking(false);
-        currentAudio.current = null;
-        // Last resort: device speech synthesis
-        const utterance = new SpeechSynthesisUtterance(w);
-        if (selectedVoice) utterance.voice = selectedVoice;
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend   = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-      };
-      audio.play().catch(() => { setIsSpeaking(false); currentAudio.current = null; });
+    function deviceSpeak(w: string) {
+      const utterance = new SpeechSynthesisUtterance(w);
+      if (selectedVoice) utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice?.lang ?? 'en-US';
+      utterance.rate = 0.9;
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend   = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
     }
   }, [selectedVoice]);
 
