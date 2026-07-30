@@ -156,6 +156,7 @@ export function Home() {
               {isTeacher && (
                 <AddCardForm 
                   editingCard={editingCard}
+                  categories={categories}
                   onAdd={addCard}
                   onUpdate={updateCard}
                   onCancelEdit={() => setEditingCard(null)}
